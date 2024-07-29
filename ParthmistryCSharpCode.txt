@@ -1,0 +1,416 @@
+	public class User
+	{
+        public string Username { get; set; }
+        public string StudentId { get; set; }
+		public int AttemptScore { get; set; }
+	}
+
+public class Questionnaire
+{
+    public string QuestionNumber { get; set; }
+	public string Question { get; set; }
+	public Dictionary<string, string> OptionAndAnswer { get; set; }
+	public string CorrectAnswer { get; set; }
+	public string SelectedAnswer { get; set; } = "";
+}
+
+	/// <summary>
+	///  The main entry point for the application.
+	/// </summary>
+	[STAThread]
+	static void Main()
+	{
+		// To customize application configuration such as set high DPI settings or default font,
+		// see https://aka.ms/applicationconfiguration.
+		ApplicationConfiguration.Initialize();
+		Application.Run(new Form1());
+	}
+
+public partial class Form1 : Form
+{
+	public Form1()
+	{
+		InitializeComponent();
+	}
+
+	private void btnCancel_Click(object sender, EventArgs e)
+	{
+		Environment.Exit(0);
+	}
+
+	private void btnBegin_Click(object sender, EventArgs e)
+	{
+		this.Hide();
+		UserDetailForm userDetailForm = new UserDetailForm();
+		userDetailForm.Closed += (s, args) => this.Close();
+		userDetailForm.Show();
+	}
+}
+
+
+public partial class OutputForm : Form
+{
+	int yPoint = 20;
+	public User _user;
+	public List<Questionnaire> _questionnaires;
+	public OutputForm(User user, List<Questionnaire> questionnaires)
+	{
+		InitializeComponent();
+		_user = user;
+		_questionnaires = questionnaires;
+	}
+
+	private void OutputForm_Load(object sender, EventArgs e)
+	{
+		lblStudentName.Text = _user.Username;
+		lblSudentId.Text = _user.StudentId;
+		lblAttemptScore.Text = _questionnaires.Where(x => x.SelectedAnswer != "").Count().ToString();
+
+		lblFirstSelectedAnswer.Visible = false;
+		lblFirstCorrectAnswer.Visible=false;
+		lblSecondSelectedAnswer.Visible=false;
+		lblSecondCorrectAnswer.Visible=false;
+		lblThirdSelectedAnswer.Visible=false;
+		lblThirdCorrectAnswer.Visible=false;
+		lblFourthSelectedAnswer.Visible=false;
+		lblFourthCorrectAnswer.Visible=false;
+		lblFifthSelectedAnswer.Visible = false;
+		lblFifthCorrectAnswer.Visible = false;
+		label4.Visible = false;
+		label5.Visible = false;
+		label6.Visible = false;
+		label11.Visible = false;
+		label10.Visible = false;
+		label8.Visible = false;
+		label14.Visible = false;
+		label13.Visible = false;
+		label9.Visible = false;
+		label17.Visible = false;
+		label16.Visible = false;
+		label12.Visible = false;
+		label20.Visible = false;
+		label19.Visible = false;
+		label15.Visible = false;
+		var incorrectAnswers = _questionnaires.Where(q => q.SelectedAnswer != q.CorrectAnswer || q.SelectedAnswer == "");
+		foreach (var item in incorrectAnswers)
+		{
+			if (item.QuestionNumber == "Question #1")
+			{
+				label4.Visible=true;
+				label5.Visible = true;
+				label6.Visible = true;
+				lblFirstSelectedAnswer.Visible = true;
+				lblFirstCorrectAnswer.Visible = true;
+				lblFirstSelectedAnswer.Text = item.OptionAndAnswer.FirstOrDefault(x => x.Key == item.SelectedAnswer).Value;
+				lblFirstCorrectAnswer.Text = item.OptionAndAnswer.FirstOrDefault(x => x.Key == item.CorrectAnswer).Value;
+			}
+			else if (item.QuestionNumber == "Question #2")
+			{
+				label11.Visible = true;
+				label10.Visible = true;
+				label8.Visible = true;
+				lblSecondSelectedAnswer.Visible = true;
+				lblSecondCorrectAnswer.Visible = true;
+				lblSecondSelectedAnswer.Text = item.OptionAndAnswer.FirstOrDefault(x => x.Key == item.SelectedAnswer).Value;
+				lblSecondCorrectAnswer.Text = item.OptionAndAnswer.FirstOrDefault(x => x.Key == item.CorrectAnswer).Value;
+			}
+			else if (item.QuestionNumber == "Question #3")
+			{
+				label14.Visible = true;
+				label13.Visible = true;
+				label9.Visible = true;
+				lblThirdSelectedAnswer.Visible = true;
+				lblThirdCorrectAnswer.Visible = true;
+				lblThirdSelectedAnswer.Text = item.OptionAndAnswer.FirstOrDefault(x => x.Key == item.SelectedAnswer).Value;
+				lblThirdCorrectAnswer.Text = item.OptionAndAnswer.FirstOrDefault(x => x.Key == item.CorrectAnswer).Value;
+			}
+			else if (item.QuestionNumber == "Question #4")
+			{
+				label17.Visible = true;
+				label16.Visible = true;
+				label12.Visible = true;
+				lblFourthSelectedAnswer.Visible = true;
+				lblFourthCorrectAnswer.Visible = true;
+				lblFourthSelectedAnswer.Text = item.OptionAndAnswer.FirstOrDefault(x => x.Key == item.SelectedAnswer).Value;
+				lblFourthCorrectAnswer.Text = item.OptionAndAnswer.FirstOrDefault(x => x.Key == item.CorrectAnswer).Value;
+			}
+			else if (item.QuestionNumber == "Question #5")
+			{
+				label20.Visible = true;
+				label19.Visible = true;
+				label15.Visible = true;
+				lblFifthSelectedAnswer.Visible = true;
+				lblFifthCorrectAnswer.Visible = true;
+				lblFifthSelectedAnswer.Text = item.OptionAndAnswer.FirstOrDefault(x => x.Key == item.SelectedAnswer).Value;
+				lblFifthCorrectAnswer.Text = item.OptionAndAnswer.FirstOrDefault(x => x.Key == item.CorrectAnswer).Value;
+			}
+			else { // }
+			}
+		}
+
+	}
+
+	private void button1_Click(object sender, EventArgs e)
+	{
+		Environment.Exit(0);
+	}
+}
+
+public partial class QuestionnaireForm : Form
+{
+	int questionIndex = 0;
+	int maxCount = 10;
+	public List<Questionnaire> _questionnaires;
+	public User _user;
+	public Questionnaire _currentQuestionarire = new Questionnaire();
+	System.Timers.Timer myTimer = new System.Timers.Timer(1000);
+	int percentageToAdd = 0;
+	public QuestionnaireForm(User user, List<Questionnaire> questionnaires)
+	{
+		InitializeComponent();
+		_questionnaires = questionnaires;
+		_user = user;
+		percentageToAdd = 100 / _questionnaires.Count;
+	}
+
+	private void QuestionnaireForm_Load(object sender, EventArgs e)
+	{
+		_currentQuestionarire = _questionnaires.ElementAt(questionIndex);
+		lblQustionNumber.Text = _currentQuestionarire.QuestionNumber;
+		groupBoxQuestion.Text = _currentQuestionarire.Question;
+		radioButton1.Text = _currentQuestionarire.OptionAndAnswer.ElementAt(0).Value;
+		radioButton2.Text = _currentQuestionarire.OptionAndAnswer.ElementAt(1).Value;
+		radioButton3.Text = _currentQuestionarire.OptionAndAnswer.ElementAt(2).Value;
+		radioButton4.Visible= false;
+		if(_currentQuestionarire.OptionAndAnswer.Count>3)
+			{
+			radioButton4.Visible= true;
+			radioButton4.Text = _currentQuestionarire.OptionAndAnswer.ElementAt(3).Value;
+		}
+
+		myTimer.Elapsed += Tick;
+		myTimer.Enabled = true;
+	}
+
+	private void Tick(Object source, ElapsedEventArgs e)
+	{
+		maxCount -= 1;
+		if (maxCount >= 0)
+		{
+			lblSecondLeft.Invoke(t => t.Text = maxCount.ToString() + " seconds");
+		}
+		else
+		{
+			groupBoxQuestion.Invoke(g => g.Enabled = false);
+		}
+
+	}
+
+	private void btnSubmit_Click(object sender, EventArgs e)
+	{
+		_currentQuestionarire.SelectedAnswer = GetCheckedAnswer();
+		btnSubmit.Enabled = false;
+	}
+
+	private void btnNext_Click(object sender, EventArgs e)
+	{
+		questionIndex++;
+		if (questionIndex < _questionnaires.Count)
+		{
+			btnSubmit.Enabled = true;
+			DialogResult result = DialogResult.None;
+			if (String.IsNullOrEmpty(_currentQuestionarire.SelectedAnswer))
+			{
+				result = MessageBox.Show("You haven't submitted your answer, move on to the next question?", "Confirm", MessageBoxButtons.YesNo);
+			}
+			if (result == DialogResult.No)
+				return;
+
+			groupBoxQuestion.Invoke(g => g.Enabled = true);
+			maxCount = 10;
+			System.Timers.Timer newTimer = new System.Timers.Timer(1000);
+			newTimer.Elapsed -= Tick;
+			newTimer.Enabled = false;
+			newTimer.Enabled = true;
+
+			progressBar1.Value += percentageToAdd;
+
+			_currentQuestionarire = _questionnaires.ElementAt(questionIndex);
+			lblQustionNumber.Text = _currentQuestionarire.QuestionNumber;
+			groupBoxQuestion.Text = _currentQuestionarire.Question;
+			radioButton1.Text = _currentQuestionarire.OptionAndAnswer.ElementAt(0).Value;
+			radioButton2.Text = _currentQuestionarire.OptionAndAnswer.ElementAt(1).Value;
+			radioButton3.Text = _currentQuestionarire.OptionAndAnswer.ElementAt(2).Value;
+			if (_currentQuestionarire.OptionAndAnswer.Count > 3)
+			{
+				radioButton4.Text = _currentQuestionarire.OptionAndAnswer.ElementAt(3).Value;
+			}
+
+			newTimer.Elapsed += Tick;
+			newTimer.Enabled = true;
+		}
+		else if (questionIndex == _questionnaires.Count)
+		{
+			this.Hide();
+			OutputForm outputForm = new OutputForm(_user, _questionnaires);
+			outputForm.Closed += (s, args) => this.Close();
+			outputForm.Show();
+		}
+	}
+
+	private string GetCheckedAnswer()
+	{
+		if (radioButton1.Checked == true)
+			return "A";
+		else if (radioButton2.Checked == true)
+			return "B";
+		else if (radioButton3.Checked == true)
+			return "C";
+		else if (radioButton4.Checked == true)
+			return "D";
+		else
+		{
+			//
+		}
+		return "";
+	}
+}
+public static class Extensions
+{
+	public static void Invoke<TControlType>(this TControlType control, Action<TControlType> del)
+		where TControlType : Control
+	{
+		if (control.InvokeRequired)
+			control.Invoke(new Action(() => del(control)));
+		else
+			del(control);
+	}
+}
+
+
+public partial class UserDetailForm : Form
+{
+	List<Questionnaire> Questionnaires = new List<Questionnaire>();
+	string correctPassword = "prg455";
+	int counter = 0;
+	int maxAttempt = 3;
+	User user = new User();
+	public UserDetailForm()
+	{
+		InitializeComponent();
+		LoadQuestionnaires();
+	}
+
+	private void btnContinue_Click(object sender, EventArgs e)
+	{
+		if(txtBoxName.Text is null || txtBoxName.Text.Length == 0 )
+		{
+			MessageBox.Show("Please enter your name");
+		}
+		if (txtBoxStudentId.Text is null || txtBoxStudentId.Text.Length == 0)
+		{
+			MessageBox.Show("Please enter your student id");
+		}
+		if (txtBoxPassword.Text is null || txtBoxPassword.Text.Length == 0)
+		{
+			MessageBox.Show("Please enter your password");
+		}
+
+		user.Username = txtBoxName.Text;
+		user.StudentId = txtBoxStudentId.Text;
+
+		if(txtBoxPassword.Text == correctPassword)
+		{
+			this.Hide();
+			QuestionnaireForm questionnaireForm = new QuestionnaireForm(user, Questionnaires);
+			questionnaireForm.Closed += (s, args) => this.Close();
+			questionnaireForm.Show();
+		}
+		else
+		{
+			counter++; 
+			if(counter < maxAttempt)
+			{
+				MessageBox.Show($"Wrong password, {maxAttempt - counter} remained.");
+			}
+			else
+			{
+				MessageBox.Show($"Application will terminate");
+				Environment.Exit(0);
+			}
+
+		}
+	}
+
+	private void LoadQuestionnaires()
+	{
+		Questionnaires.Clear();
+		Questionnaires.Add(new Questionnaire
+		{
+			QuestionNumber = "Question #1",
+			Question = "Which of the following converts a type to a 32-bit integer in C#?",
+			OptionAndAnswer = new Dictionary<string, string>
+			{
+				{"A", "(A) ToDecimal" },
+				{"B", "(B) ToDouble" },
+				{"C", "(C) ToInt16" },
+				{"D", "(D) ToInt32" }
+		},
+			CorrectAnswer = "D"
+		});
+
+		Questionnaires.Add(new Questionnaire
+		{
+			QuestionNumber = "Question #2",
+			Question = "Which of the following method copies the actual values of an argument into the formal parameter of the function?",
+			OptionAndAnswer = new Dictionary<string, string>
+			{
+				{"A", "(A) Value Paramters" },
+				{"B", "(B) Reference Paramaters" },
+				{"C", "(C) Output parameters" }
+		},
+			CorrectAnswer = "B"
+		});
+
+		Questionnaires.Add(new Questionnaire
+		{
+			QuestionNumber = "Question #3",
+			Question = "Which of the following declares a jagged array in C#?",
+			OptionAndAnswer = new Dictionary<string, string>
+			{
+				{"A", "(A) double[][] arr" },
+				{"B", "(B) double[,] arr" },
+				{"C", "(C) double arr[][]" }
+		},
+			CorrectAnswer = "A"
+		});
+
+		Questionnaires.Add(new Questionnaire
+		{
+			QuestionNumber = "Question #4",
+			Question = "Which of the following is not allow in C# as access modifier?",
+			OptionAndAnswer = new Dictionary<string, string>
+			{
+				{"A", "(A) public" },
+				{"B", "(B) friend" },
+				{"C", "(C) internal" },
+				{"D", "(D) protected" }
+		},
+			CorrectAnswer = "B"
+		});
+
+		Questionnaires.Add(new Questionnaire
+		{
+			QuestionNumber = "Question #5",
+			Question = "Which is the String method used to compare tow strings with each other?",
+			OptionAndAnswer = new Dictionary<string, string>
+			{
+				{"A", "(A) Comapre" },
+				{"B", "(B) Compare To" },
+				{"C", "(C) Copy" },
+				{"D", "(D) ConCat" }
+		},
+			CorrectAnswer = "A"
+		});
+	}
+}
